@@ -17,15 +17,16 @@ public class DefaultFrame extends JFrame
     private JEditorPane aboutPane;
     private JFrame helpFrame;
     private JEditorPane helpPane;
-    public DefaultFrame()
-    {
+    public DefaultFrame() throws IOException {
 
         // Create menu bar, menus and menu items
         JMenuBar menubar = new JMenuBar();
         this.setJMenuBar(menubar);
+        JMenu homeMenu = new JMenu("Home");
         JMenu fileMenu = new JMenu("File");
         JMenu toolsMenu = new JMenu("Tools");
         JMenu helpMenu = new JMenu("Help");
+        menubar.add(homeMenu);
         menubar.add(fileMenu);
         menubar.add(toolsMenu);
         menubar.add(helpMenu);
@@ -43,6 +44,7 @@ public class DefaultFrame extends JFrame
 
         // Create a listener and add it to the menu items
         MenuListener menuList = new MenuListener(this);
+        homeMenu.addActionListener(menuList);
         loadItem.addActionListener(menuList);
         exitItem.addActionListener(menuList);
         calculatorItem.addActionListener(menuList);
@@ -133,91 +135,6 @@ public class DefaultFrame extends JFrame
             System.out.println("Problems opening or reading About.txt");
         }
         System.out.println("Menu item About selected.");
-    }
-
-    static double num;
-    public void openCalculator()
-    {
-        // set up frame
-        JFrame frame = new JFrame();
-        frame.setSize(200, 200);
-        frame.setTitle("Calculator");
-        frame.setLocationByPlatform(true);
-        frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-
-        // set up panel
-        JPanel panel = new JPanel();
-        // set layout to 5x2 grid layout
-        panel.setLayout(new GridLayout(5, 2));
-
-        // set up answer label
-        JLabel answer = new JLabel();
-
-        // set up number text fields
-        JTextField num1 = new JTextField();
-        JTextField num2 = new JTextField();
-
-        // set up buttons
-        JButton add = new JButton();
-        add.setText("+");
-        add.addActionListener(event -> {
-            try {
-                num = Double.parseDouble(num1.getText())
-                        + Double.parseDouble(num2.getText());
-                answer.setText(Double.toString(num));
-            } catch (Exception e) {
-                answer.setText("Error!");
-            }
-        });
-        JButton sub = new JButton();
-        sub.setText("-");
-        sub.addActionListener(event -> {
-            try {
-                num = Double.parseDouble(num1.getText())
-                        - Double.parseDouble(num2.getText());
-                answer.setText(Double.toString(num));
-            } catch (Exception e) {
-                answer.setText("Error!");
-            }
-        });
-        JButton mul = new JButton();
-        mul.setText("*");
-        mul.addActionListener(event -> {
-            try {
-                num = Double.parseDouble(num1.getText())
-                        * Double.parseDouble(num2.getText());
-                answer.setText(Double.toString(num));
-            } catch (Exception e) {
-                answer.setText("Error!");
-            }
-        });
-        JButton div = new JButton();
-        div.setText("/");
-        div.addActionListener(event -> {
-            try {
-                num = Double.parseDouble(num1.getText())
-                        / Double.parseDouble(num2.getText());
-                answer.setText(Double.toString(num));
-            } catch (Exception e) {
-                answer.setText("Error!");
-            }
-        });
-
-        // add components to panel
-        panel.add(new JLabel("Number 1"));
-        panel.add(new JLabel("Number 2"));
-        panel.add(num1);
-        panel.add(num2);
-        panel.add(add);
-        panel.add(sub);
-        panel.add(mul);
-        panel.add(div);
-        panel.add(new JLabel("Answer"));
-        panel.add(answer);
-
-        // add panel to frame and make it visible
-        frame.add(panel);
-        frame.setVisible(true);
     }
 
     // Makes the frame visible.
