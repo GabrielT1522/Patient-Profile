@@ -1,10 +1,15 @@
 package Profile;
 
 import Home.HomeModel;
+import Home.HomePanel;
+import Home.Patient;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Vector;
 
 public class ProfilePanel extends JPanel {
 
@@ -61,7 +66,13 @@ public class ProfilePanel extends JPanel {
 
         JButton searchButton = new JButton("Search");
         profileContentPanel.add(searchButton);
-        searchButton.addActionListener(e -> searchPatients());
+        searchButton.addActionListener(e -> {
+            try {
+                searchPatients();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         JScrollPane scrollPane = new JScrollPane();
         profileContentPanel.add(scrollPane, BorderLayout.CENTER);
@@ -77,18 +88,6 @@ public class ProfilePanel extends JPanel {
                 "Middle Name",
                 "Suffix",
                 "Date of Birth",
-                /*"Address",
-                "Address 2",
-                "City",
-                "State",
-                "Zip Code",
-                "County",
-                "Work Phone",
-                "Home Phone",
-                "Cell Phone",
-                "Race",
-                "Ethnicity",
-                "Sex"*/
         });
         table.setModel(tableModel);
 
@@ -96,20 +95,28 @@ public class ProfilePanel extends JPanel {
         this.add(profilePanel);
     }
 
-    public void searchPatients()
-    {
+    public Vector<String> makeRow(Patient patient){
+        Vector<String> row = new Vector<>();
+        row.add(patient.getPatientID());
+        return row;
+    }
+
+    public void searchPatients() throws IOException {
         HomeModel homeModel = new HomeModel();
+
         String IDSearchTerm = patientIDSearchField.getText().toLowerCase();
         String lastNameSearchTerm = lastNameSearchField.getText().toLowerCase();
         String firstNameSearchTerm = firstNameSearchField.getText().toLowerCase();
         String DOBSearchTerm = DOBSearchField.getText();
         tableModel.setRowCount(0);
 
-        for (String[] patient : homeModel.getPatientData()) {
-            if (patient[0].toLowerCase().equals(IDSearchTerm)) {
-                tableModel.addRow(patient);
-            } else if ((patient[1].contains(lastNameSearchTerm) && patient[2].contains(firstNameSearchTerm) && patient[5].contains(DOBSearchTerm))) {
-                tableModel.addRow(patient);
+        ArrayList<Patient> patientData = (ArrayList<Patient>) homeModel.getPatientData();
+        System.out.println(patientData.size());
+        for (Patient patient : homeModel.getPatientData()) {
+            if (patient.getPatientID().toLowerCase().equals(IDSearchTerm)) {
+                tableModel.addRow(makeRow(patient));
+            } else if ((patient.getLastName().contains(lastNameSearchTerm) && patient.getFirstName().contains(firstNameSearchTerm) && patient.getDateOfBirth().contains(DOBSearchTerm))) {
+                tableModel.addRow(makeRow(patient));
             }
         }
     }

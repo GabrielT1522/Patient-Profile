@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="jfreechart-1.0.19" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$USER_HOME$/Downloads/jfreechart-1.0.19" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$USER_HOME$/Downloads/jfreechart-1.0.19" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -13,8 +13,6 @@ public class DefaultFrame extends JFrame
     private File selectedFile;
     private JFrame loadFrame;
     private JEditorPane loadPane;
-    private JFrame aboutFrame;
-    private JEditorPane aboutPane;
     private JFrame helpFrame;
     private JEditorPane helpPane;
     public DefaultFrame() throws IOException {
@@ -116,17 +114,19 @@ public class DefaultFrame extends JFrame
     public void openAbout()
     {
         // Create aboutFrame
-        aboutFrame = new JFrame();
-        aboutPane = new JEditorPane();
+        JFrame aboutFrame = new JFrame();
+        JEditorPane aboutPane = new JEditorPane();
         JScrollPane aboutScrollPane = new JScrollPane(aboutPane);
         aboutFrame.getContentPane().add(aboutScrollPane, BorderLayout.CENTER);
         aboutFrame.setTitle("About");
-        aboutFrame.setSize(295,200);
+        aboutFrame.setSize(700,300);
         aboutFrame.setLocation(295,200);
         aboutFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        aboutFrame.setResizable(false);
+        aboutPane.setEditable(false);
         try {
             aboutFrame.setVisible(true);
-            FileReader reader = new FileReader("About.txt");
+            FileReader reader = new FileReader("src/About.txt");
             aboutPane.read(reader, null);
             System.out.println("About.txt successfully opened.");
             aboutFrame.setTitle("About");
