@@ -39,6 +39,7 @@ To insert a new patient into the dataset, follow these steps:
 - Click on the "Insert Patient" tab.
 - Fill out the patient details in the form provided.
 - Click the "Save" button.
+
 The new patient's information will be added to the original .csv file.
 
 # Conclusion
