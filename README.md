@@ -42,4 +42,4 @@ Click the "Save" button.
 The new patient's information will be added to the original .csv file.
 
 # Conclusion
-This application provides a user-friendly interface for managing patient data in the City of Laredo. Its three tabs - view patient, dashboard, and insert patient - allow users to easily search for patient information, view statistics about the dataset, and add new patient information. If you have any questions or issues with the application, please feel free to contact the developer.
+This application provides a user-friendly interface for managing patient data in the City of Laredo Health Department. Its three tabs - view patient, dashboard, and insert patient - allow users to easily search for patient information, view statistics about the dataset, and add new patient information. If you have any questions or issues with the application, please feel free to contact the developer.
