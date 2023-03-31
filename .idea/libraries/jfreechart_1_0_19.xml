@@ -6,7 +6,7 @@
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$USER_HOME$/Downloads/jfreechart-1.0.19" />
+      <root url="file://$PROJECT_DIR$/jfreechart-1.0.19" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

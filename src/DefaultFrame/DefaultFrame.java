@@ -1,18 +1,12 @@
 package DefaultFrame;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class DefaultFrame extends JFrame
 {
-    private JFileChooser chooser;
-    private File selectedFile;
-    private JFrame loadFrame;
-    private JEditorPane loadPane;
     private JFrame helpFrame;
     private JEditorPane helpPane;
     public DefaultFrame() throws IOException {
@@ -20,21 +14,32 @@ public class DefaultFrame extends JFrame
         // Create menu bar, menus and menu items
         JMenuBar menubar = new JMenuBar();
         this.setJMenuBar(menubar);
-        JMenu homeMenu = new JMenu("Home");
         JMenu fileMenu = new JMenu("File");
-        JMenu toolsMenu = new JMenu("Tools");
+        JMenu tabsMenu = new JMenu("Tabs");
+        //JMenu toolsMenu = new JMenu("Tools");
         JMenu helpMenu = new JMenu("Help");
-        menubar.add(homeMenu);
         menubar.add(fileMenu);
-        menubar.add(toolsMenu);
+        menubar.add(tabsMenu);
+        //menubar.add(toolsMenu);
         menubar.add(helpMenu);
+        JMenuItem homeItem = new JMenuItem("Home");
+        JMenuItem viewPatientItem = new JMenuItem("View Patient");
+        JMenuItem dashboardItem = new JMenuItem("Dashboard");
+        JMenuItem insertPatientItem = new JMenuItem("Insert Patient");
+        tabsMenu.add(homeItem);
+        tabsMenu.addSeparator();
+        tabsMenu.add(viewPatientItem);
+        tabsMenu.add(dashboardItem);
+        tabsMenu.add(insertPatientItem);
+
+
         JMenuItem loadItem = new JMenuItem("Load");
         JMenuItem exitItem = new JMenuItem("Exit");
         fileMenu.add(loadItem);
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
         JMenuItem calculatorItem = new JMenuItem("Calculator");
-        toolsMenu.add(calculatorItem);
+        //toolsMenu.add(calculatorItem);
         JMenuItem helpItem = new JMenuItem("Help");
         JMenuItem aboutItem = new JMenuItem("About");
         helpMenu.add(helpItem);
@@ -42,7 +47,12 @@ public class DefaultFrame extends JFrame
 
         // Create a listener and add it to the menu items
         MenuListener menuList = new MenuListener(this);
-        homeMenu.addActionListener(menuList);
+        tabsMenu.addActionListener(menuList);
+        homeItem.addActionListener(menuList);
+        viewPatientItem.addActionListener(menuList);
+        dashboardItem.addActionListener(menuList);
+        insertPatientItem.addActionListener(menuList);
+
         loadItem.addActionListener(menuList);
         exitItem.addActionListener(menuList);
         calculatorItem.addActionListener(menuList);
@@ -54,41 +64,8 @@ public class DefaultFrame extends JFrame
         this.setLocation(450,350);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
-    public void openFile()
-    {
-        // Create loadFrame
-        loadFrame = new JFrame();
-        loadPane = new JEditorPane();
-        JScrollPane loadScrollPane = new JScrollPane(loadPane);
-        loadFrame.getContentPane().add(loadScrollPane, BorderLayout.CENTER);
-        loadFrame.setTitle("");
-        loadFrame.setSize(350,300);
-        loadFrame.setLocation(350,300);
-        loadFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        if (chooser == null) {
-            chooser = new JFileChooser(new File("/Users/gabrieltorres/Desktop/Java/AccountGUI/Account Receipts"));
-        }
-        // Allow only .txt files
-        chooser.setAcceptAllFileFilterUsed(false);
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(".txt Files", "txt");
-        chooser.addChoosableFileFilter(filter);
-        //chooser.showOpenDialog(null);
-        int returnVal = chooser.showOpenDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            selectedFile = chooser.getSelectedFile();
-            try {
-                loadFrame.setVisible(true);
-                FileReader reader = new FileReader(selectedFile);
-                loadPane.read(reader, null);
-                System.out.println(selectedFile.getName() + " successfully opened.");
-                loadFrame.setTitle(selectedFile.getName());
-                reader.close();
-            } catch (IOException e) {
-                System.out.println("Problems opening or reading " + selectedFile.getName());
-            }
-        }//if
-        System.out.println("Menu item Load selected.");
-    }
+
+
     public void openHelp(){
         // Create helpFrame
         helpFrame = new JFrame();

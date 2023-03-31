@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
-   <dependency>
-       <groupId>org.jfree</groupId>
-       <artifactId>jfreechart</artifactId>
-       <version>1.5.3</version>
-   </dependency>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -13,5 +8,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="jfreechart-1.0.19" level="project" />
+    <orderEntry type="library" name="Maven: org.jfree:jcommon:1.0.24" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>

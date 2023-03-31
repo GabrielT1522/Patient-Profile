@@ -1,4 +1,6 @@
 import DefaultFrame.DefaultFrame;
+import Home.HomeFrame;
+
 import java.io.IOException;
 
 public class PatientProfileDriver extends DefaultFrame {
@@ -7,8 +9,7 @@ public class PatientProfileDriver extends DefaultFrame {
     }
 
     public static void main(String[] args) throws IOException {
-
-        PatientProfileFrame patientProfileFrame = new PatientProfileFrame();
-        patientProfileFrame.showIt("Laredo Health Patient Profiles");
+        HomeFrame homeFrame = new HomeFrame();
+        homeFrame.showIt("Laredo Health Patient Profiles");
     }
 }
