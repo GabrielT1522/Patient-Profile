@@ -1,9 +1,13 @@
 package DefaultFrame;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 public class DefaultFrame extends JFrame
 {
@@ -70,15 +74,28 @@ public class DefaultFrame extends JFrame
         // Create helpFrame
         helpFrame = new JFrame();
         helpPane = new JEditorPane();
-        JScrollPane helpScrollPane = new JScrollPane(helpPane);
+        //JScrollPane helpScrollPane = new JScrollPane(helpPane);
+
+        JEditorPane helpScrollPane = new JEditorPane();
+        helpScrollPane.setEditable(false);
+        URL url= DefaultFrame.class.getResource("About.html");
+
+        try {
+            helpScrollPane.setPage(url);
+        } catch (IOException e) {
+            helpScrollPane.setContentType("text/html");
+            helpScrollPane.setText("<html>Page not found.</html>");
+        }
+
         helpFrame.getContentPane().add(helpScrollPane, BorderLayout.CENTER);
         helpFrame.setTitle("About");
-        helpFrame.setSize(450,300);
+        helpFrame.setSize(500,300);
         helpFrame.setLocation(450,300);
         helpFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        helpPane.setEditable(false);
         try {
             helpFrame.setVisible(true);
-            FileReader reader = new FileReader("Help.txt");
+            FileReader reader = new FileReader("README.md");
             helpPane.read(reader, null);
             System.out.println("Help.txt successfully opened.");
             helpFrame.setTitle("Help");
@@ -88,31 +105,46 @@ public class DefaultFrame extends JFrame
         }
         System.out.println("Menu item Help selected.");
     }
-    public void openAbout()
-    {
+
+    public void openAbout() {
         // Create aboutFrame
         JFrame aboutFrame = new JFrame();
         JEditorPane aboutPane = new JEditorPane();
         JScrollPane aboutScrollPane = new JScrollPane(aboutPane);
+        aboutPane.setEditable(false);
+        URL url = getClass().getResource("/About.html");
+
+        try {
+            aboutPane.setPage(url);
+        } catch (IOException e) {
+            aboutPane.setContentType("text/html");
+            aboutPane.setText("<html>Page not found.</html>");
+        }
+
+        // Handle hyperlink clicks
+        aboutPane.addHyperlinkListener(e -> {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                try {
+                    URI uri = e.getURL().toURI();
+                    Desktop.getDesktop().browse(uri);
+                } catch (URISyntaxException | IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
         aboutFrame.getContentPane().add(aboutScrollPane, BorderLayout.CENTER);
         aboutFrame.setTitle("About");
-        aboutFrame.setSize(700,300);
-        aboutFrame.setLocation(295,200);
+        aboutFrame.setSize(600, 400);
+        aboutFrame.setLocationRelativeTo(null); // Center the frame on screen
         aboutFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         aboutFrame.setResizable(false);
         aboutPane.setEditable(false);
-        try {
-            aboutFrame.setVisible(true);
-            FileReader reader = new FileReader("src/About.txt");
-            aboutPane.read(reader, null);
-            System.out.println("About.txt successfully opened.");
-            aboutFrame.setTitle("About");
-            reader.close();
-        } catch (IOException e) {
-            System.out.println("Problems opening or reading About.txt");
-        }
-        System.out.println("Menu item About selected.");
+        aboutFrame.setVisible(true);
+
+        System.out.println("About.html successfully opened.");
     }
+
 
     // Makes the frame visible.
     public void showIt(){
