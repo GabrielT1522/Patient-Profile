@@ -19,7 +19,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -36,10 +35,10 @@ public class HomePanel extends JPanel {
     private final JPanel homePanel = new JPanel();
     private final JPanel homeLogoPanel = new JPanel();
     private final JPanel homeInfoPanel = new JPanel();
-    private JPanel homeContentPanel = new JPanel();
+    private final JPanel homeContentPanel = new JPanel();
 
     public final JLabel welcomeLabel = new JLabel("Please enter the patient data as a .csv file:");
-    public final BufferedImage logoImage = ImageIO.read(new File("src/Home/logoImg.png"));
+    public final BufferedImage logoImage = ImageIO.read(new File("src/logoImg.png"));
     public final JLabel logoLabel = new JLabel(new ImageIcon(logoImage));
     public final JButton chooseFileButton = new JButton("Choose a File");
     public final JButton viewPatientButton = new JButton("View a Patient Profile");
@@ -85,7 +84,7 @@ public class HomePanel extends JPanel {
 
         viewDashboardButton.setPreferredSize(new Dimension(350, 50));
         viewDashboardButton.setFont(headingFont);
-        viewDashboardButton.addActionListener(e -> showDashboard());
+        viewDashboardButton.addActionListener(e -> makeDashboard());
 
         insertPatientButton.setPreferredSize(new Dimension(350, 50));
         insertPatientButton.setFont(headingFont);
@@ -271,6 +270,26 @@ public class HomePanel extends JPanel {
         this.add(cardPanel);
     }
 
+    public void displayHomeCard() {
+        cardLayout.show(cardPanel, "Home");
+        System.out.println("Home card now showing.");
+    }
+
+    public void displayPatientCard() {
+        cardLayout.show(cardPanel, "Profile");
+        System.out.println("Patient card now showing.");
+    }
+
+    public void displayDashboardCard() {
+        cardLayout.show(cardPanel, "Dashboard");
+        System.out.println("Dashboard card now showing.");
+    }
+
+    public void displayInsertCard() {
+        cardLayout.show(cardPanel, "Insert");
+        System.out.println("Insert card now showing.");
+    }
+
     public void chooseFileListener()
     {
         try{
@@ -298,7 +317,7 @@ public class HomePanel extends JPanel {
         }
     }
 
-    public void showDashboard(){
+    public void makeDashboard(){
         // Get the list of patients
         ArrayList <Patient> patientList = (ArrayList <Patient> ) homeModel.getPatientData();
 
@@ -431,11 +450,6 @@ public class HomePanel extends JPanel {
         dashboardContentPanel.add(genderChartPanel);
         cardLayout.show(cardPanel, "Dashboard");
 
-    }
-
-    public void goHome() {
-        cardLayout.show(cardPanel, "Home");
-        System.out.println("It works");
     }
 
     public Vector<String> makeRow(Patient patient){
@@ -605,9 +619,6 @@ public class HomePanel extends JPanel {
         patientFrame.setTitle("Patient #"+selectedPatient.getPatientID()+" Profile");
 
         // Add the logo image to the top left corner of the frame
-        String logoImgPath = "src/Home/logoImg.png";
-        ImageIcon logoIcon = new ImageIcon(logoImgPath);
-        JLabel logoLabel = new JLabel(logoIcon);
         patientFrame.getContentPane().setBackground(Color.white);
         patientFrame.getContentPane().add(logoLabel, BorderLayout.WEST);
 

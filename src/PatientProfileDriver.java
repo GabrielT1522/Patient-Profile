@@ -1,9 +1,8 @@
-import DefaultFrame.DefaultFrame;
 import Home.HomeFrame;
 
 import java.io.IOException;
 
-public class PatientProfileDriver extends DefaultFrame {
+public class PatientProfileDriver extends HomeFrame {
 
     public PatientProfileDriver() throws IOException {
     }
