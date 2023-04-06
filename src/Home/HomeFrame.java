@@ -3,6 +3,7 @@ package Home;
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,12 +23,11 @@ public class HomeFrame extends JFrame
         this.setJMenuBar(menubar);
         JMenu fileMenu = new JMenu("File");
         JMenu tabsMenu = new JMenu("Tabs");
-        //JMenu toolsMenu = new JMenu("Tools");
         JMenu helpMenu = new JMenu("Help");
         menubar.add(fileMenu);
         menubar.add(tabsMenu);
-        //menubar.add(toolsMenu);
         menubar.add(helpMenu);
+
         JMenuItem homeItem = new JMenuItem("Home");
         JMenuItem viewPatientItem = new JMenuItem("View Patient");
         JMenuItem dashboardItem = new JMenuItem("Dashboard");
@@ -44,8 +44,7 @@ public class HomeFrame extends JFrame
         fileMenu.add(loadItem);
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
-        JMenuItem calculatorItem = new JMenuItem("Calculator");
-        //toolsMenu.add(calculatorItem);
+
         JMenuItem helpItem = new JMenuItem("Help");
         JMenuItem aboutItem = new JMenuItem("About");
         helpMenu.add(helpItem);
@@ -54,6 +53,7 @@ public class HomeFrame extends JFrame
         // Create a listener and add it to the menu items
         MenuListener menuList = new MenuListener(this, homePanel);
         tabsMenu.addActionListener(menuList);
+
         homeItem.addActionListener(menuList);
         viewPatientItem.addActionListener(menuList);
         dashboardItem.addActionListener(menuList);
@@ -61,7 +61,7 @@ public class HomeFrame extends JFrame
 
         loadItem.addActionListener(menuList);
         exitItem.addActionListener(menuList);
-        calculatorItem.addActionListener(menuList);
+
         helpItem.addActionListener(menuList);
         aboutItem.addActionListener(menuList);
 
@@ -75,42 +75,32 @@ public class HomeFrame extends JFrame
 
 
     public void openHelp() {
-        // Create aboutFrame
+        // Create helpFrame
         JFrame helpFrame = new JFrame();
         JEditorPane helpPane = new JEditorPane();
         JScrollPane helpScrollPane = new JScrollPane(helpPane);
+
         helpPane.setEditable(false);
-        URL url = getClass().getResource("/Help.html");
-
-        try {
-            helpPane.setPage(url);
-        } catch (IOException e) {
-            helpPane.setContentType("text/html");
-            helpPane.setText("<html>Page not found.</html>");
-        }
-
-        // Handle hyperlink clicks
-        helpPane.addHyperlinkListener(e -> {
-            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                try {
-                    URI uri = e.getURL().toURI();
-                    Desktop.getDesktop().browse(uri);
-                } catch (URISyntaxException | IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
+        helpPane.setMargin(new Insets(10, 10, 10, 10)); // add padding
 
         helpFrame.getContentPane().add(helpScrollPane, BorderLayout.CENTER);
-        helpFrame.setTitle("Help");
-        helpFrame.setSize(600, 400);
-        helpFrame.setLocationRelativeTo(null); // Center the frame on screen
+        helpFrame.setTitle("About");
+        helpFrame.setSize(550, 400);
+        helpFrame.setResizable(false); // make the frame not resizable
+        helpFrame.setLocationRelativeTo(null); // center the frame
         helpFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        helpFrame.setResizable(false);
-        helpPane.setEditable(false);
-        helpFrame.setVisible(true);
 
-        System.out.println("Help.html successfully opened.");
+        String path = "README.md";
+        try {
+            FileReader reader = new FileReader(path);
+            helpPane.read(reader, null);
+            System.out.println(path + " successfully opened.");
+            reader.close();
+        } catch (IOException e) {
+            System.out.println("Problems opening or reading " + path);
+        }
+
+        helpFrame.setVisible(true);
     }
 
     public void openAbout() {

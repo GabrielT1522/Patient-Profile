@@ -17,8 +17,11 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -52,17 +55,111 @@ public class HomePanel extends JPanel {
     private final JPanel cardPanel = new JPanel(new CardLayout());
     private final CardLayout cardLayout = (CardLayout)(cardPanel.getLayout());
 
-    // Profile Panel
-    private final JTextField patientIDSearchField;
-    private final JTextField firstNameSearchField;
-    private final JTextField lastNameSearchField;
-    private final JTextField DOBSearchField;
+    // ***** Patient Profile Panel Contents *****
+    private final JPanel profilePanel = new JPanel();
+    private final JPanel profileContentPanel = new JPanel();
 
-    private final JTable table = new JTable();
-    private final DefaultTableModel tableModel;
+    private final JLabel IDSearchLabel = new JLabel("Patient ID:");
+    private final JLabel firstNameSearchLabel = new JLabel("First Name:");
+    private final JLabel lastNameSearchLabel = new JLabel("Last Name:");
+    private final JLabel DOBSearchLabel = new JLabel("Date of Birth (MM/DD/YYYY):");
+
+    private JTextField patientIDSearchField;
+    private JTextField firstNameSearchField;
+    private JTextField lastNameSearchField;
+    private JTextField DOBSearchField;
+
+    private final JTable searchTable = new JTable();
+    private DefaultTableModel searchTableModel;
+
+    // ***** Dashboard Panel Contents *****
+
+    // ***** Insert Patient Panel Contents *****
+    JPanel insertPatientPanel = new JPanel();
 
     public HomePanel() throws IOException {
 
+
+        // ***** Build Home Panel *****
+        buildHome();
+
+        // ***** Assemble cardPanel *****
+
+        cardPanel.add(homePanel, "Home");
+        cardPanel.add(profilePanel, "Profile");
+        cardPanel.add(dashboardPanel, "Dashboard");
+        cardPanel.add(insertPatientPanel, "Insert");
+
+        this.setBackground(Color.white);
+        this.add(cardPanel);
+    }
+
+    public void displayHomeCard() {
+        cardLayout.show(cardPanel, "Home");
+        System.out.println("Home card now showing.");
+    }
+
+    public void displayPatientCard() {
+        // Clear fields and table before displaying
+        patientIDSearchField.setText("");
+        firstNameSearchField.setText("");
+        lastNameSearchField.setText("");
+        DOBSearchField.setText("");
+        searchTableModel.setRowCount(0);
+        cardLayout.show(cardPanel, "Profile");
+        System.out.println("Patient card now showing.");
+    }
+
+    public void displayDashboardCard() {
+        cardLayout.show(cardPanel, "Dashboard");
+        System.out.println("Dashboard card now showing.");
+    }
+
+    public void displayInsertCard() {
+        cardLayout.show(cardPanel, "Insert");
+        System.out.println("Insert card now showing.");
+    }
+
+    public void chooseFileListener()
+    {
+        try{
+            homeModel.chooseCSVFile();
+            homeModel.readCSVData();
+
+            cardLayout.show(cardPanel, "Home");
+            viewPatientButton.setEnabled(true);
+            viewDashboardButton.setEnabled(true);
+            insertPatientButton.setEnabled(true);
+
+            // ***** Build Profile Panel *****
+            buildPatientProfile();
+
+            // ***** Build Dashboard Panel *****
+            buildDashboard();
+
+            // ***** Build insertPatient Panel
+            buildInsertPatient();
+
+            welcomeLabel.setText("File Chosen: "+homeModel.getFilePath());
+            welcomeLabel.setForeground(new Color(0, 42, 92));
+        }catch (Exception e){
+            welcomeLabel.setText("Please enter a valid .csv file:");
+            welcomeLabel.setForeground(Color.red);
+            viewPatientButton.setEnabled(false);
+            viewDashboardButton.setEnabled(false);
+            insertPatientButton.setEnabled(false);
+        }finally {
+            if (Objects.equals(homeModel.getFilePath(), "")){
+                welcomeLabel.setText("Please enter a valid .csv file:");
+                welcomeLabel.setForeground(Color.red);
+                viewPatientButton.setEnabled(false);
+                viewDashboardButton.setEnabled(false);
+                insertPatientButton.setEnabled(false);
+            }
+        }
+    }
+
+    public void buildHome(){
         // ***** Build Home Panel *****
         homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.Y_AXIS));
 
@@ -80,15 +177,15 @@ public class HomePanel extends JPanel {
 
         viewPatientButton.setPreferredSize(new Dimension(350, 50));
         viewPatientButton.setFont(headingFont);
-        viewPatientButton.addActionListener(e -> cardLayout.show(cardPanel, "Profile"));
+        viewPatientButton.addActionListener(e -> displayPatientCard());
 
         viewDashboardButton.setPreferredSize(new Dimension(350, 50));
         viewDashboardButton.setFont(headingFont);
-        viewDashboardButton.addActionListener(e -> makeDashboard());
+        viewDashboardButton.addActionListener(e -> displayDashboardCard());
 
         insertPatientButton.setPreferredSize(new Dimension(350, 50));
         insertPatientButton.setFont(headingFont);
-        insertPatientButton.addActionListener(e -> cardLayout.show(cardPanel, "Insert"));
+        insertPatientButton.addActionListener(e -> displayInsertCard());
 
         homeContentPanel.add(viewPatientButton);
         homeContentPanel.add(viewDashboardButton);
@@ -101,18 +198,14 @@ public class HomePanel extends JPanel {
         homePanel.add(homeLogoPanel, BorderLayout.NORTH);
         homePanel.add(homeInfoPanel, BorderLayout.CENTER);
         homePanel.add(homeContentPanel, BorderLayout.SOUTH);
+    }
 
+    public void buildPatientProfile(){
+        profileContentPanel.removeAll();
+        revalidate();
+        repaint();
 
-        // ***** Build Profile Panel *****
-
-        JPanel profilePanel = new JPanel();
-        JPanel profileContentPanel = new JPanel();
-
-        JLabel IDSearchLabel = new JLabel("Patient ID:");
-        JLabel firstNameSearchLabel = new JLabel("First Name:");
-        JLabel lastNameSearchLabel = new JLabel("Last Name:");
-        JLabel DOBSearchLabel = new JLabel("Date of Birth (MM/DD/YYYY):");
-
+        // Build Panel
         profilePanel.add(profileContentPanel, BorderLayout.NORTH);
         profileContentPanel.setLayout(new BoxLayout(profileContentPanel, BoxLayout.Y_AXIS));
 
@@ -148,16 +241,16 @@ public class HomePanel extends JPanel {
         profileContentPanel.add(scrollPane, BorderLayout.CENTER);
         scrollPane.setPreferredSize(new Dimension(1150, 450));
 
-        scrollPane.setViewportView(table);
+        scrollPane.setViewportView(searchTable);
 
-        tableModel = new DefaultTableModel(new Object[][] {}, new String[] {
+        searchTableModel = new DefaultTableModel(new Object[][] {}, new String[] {
                 "Patient ID",
                 "Last Name",
                 "First Name",
                 "Middle Name",
                 "Date of Birth",
         });
-        table.setModel(tableModel);
+        searchTable.setModel(searchTableModel);
 
         JButton selectPatientButton = new JButton("Select this Patient");
         profileContentPanel.add(selectPatientButton);
@@ -165,159 +258,12 @@ public class HomePanel extends JPanel {
 
         profilePanel.setBackground(Color.white);
         profilePanel.add(profileContentPanel);
-
-        // ***** Build Dashboard Panel *****
-
-
-
-
-        dashboardPanel.setBackground(Color.white);
-        dashboardPanel.add(dashboardContentPanel);
-
-        // ***** Build insertPatient Panel
-
-        JPanel insertPatientPanel = new JPanel();
-        JPanel insertPatientContentPanel = new JPanel(new GridLayout(0, 2));
-
-        JLabel insertPatientLabel = new JLabel("Insert the new patient information.");
-        JLabel patientIDLabel = new JLabel("Patient ID: ");
-        JLabel firstNameLabel = new JLabel("First Name: ");
-        JLabel lastNameLabel = new JLabel("Last Name: ");
-        JLabel middleNameLabel = new JLabel("Middle Name: ");
-        JLabel suffixLabel = new JLabel("Suffix: ");
-        JLabel dateOfBirthLabel = new JLabel("Date of Birth: ");
-        JLabel address1Label = new JLabel("Address Line 1: ");
-        JLabel address2Label = new JLabel("Address Line 2: ");
-        JLabel cityLabel = new JLabel("City: ");
-        JLabel stateLabel = new JLabel("State: ");
-        JLabel zipCodeLabel = new JLabel("Zip Code: ");
-        JLabel countyLabel = new JLabel("County: ");
-        JLabel workPhoneLabel = new JLabel("Work Phone: ");
-        JLabel homePhoneLabel = new JLabel("Home Phone: ");
-        JLabel cellPhoneLabel = new JLabel("Cell Phone: ");
-        JLabel raceLabel = new JLabel("Race: ");
-        JLabel ethnicityLabel = new JLabel("Ethnicity: ");
-        JLabel sexLabel = new JLabel("Sex: ");
-
-        JTextField patientIDField = new JTextField("");
-        JTextField firstNameField = new JTextField("");
-        JTextField lastNameField = new JTextField("");
-        JTextField middleNameField = new JTextField("");
-        JTextField suffixField = new JTextField("");
-        JTextField dateOfBirthField = new JTextField("");
-        JTextField address1Field = new JTextField("");
-        JTextField address2Field = new JTextField("");
-        JTextField cityField = new JTextField("");
-        JTextField stateField = new JTextField("");
-        JTextField zipCodeField = new JTextField("");
-        JTextField countyField = new JTextField("");
-        JTextField workPhoneField = new JTextField("");
-        JTextField homePhoneField = new JTextField("");
-        JTextField cellPhoneField = new JTextField("");
-        JTextField raceField = new JTextField("");
-        JTextField ethnicityField = new JTextField("");
-        JTextField sexField = new JTextField("");
-
-        insertPatientContentPanel.add(insertPatientLabel);
-        insertPatientContentPanel.add(new JLabel(""));
-        insertPatientContentPanel.add(patientIDLabel);
-        insertPatientContentPanel.add(patientIDField);
-        insertPatientContentPanel.add(firstNameLabel);
-        insertPatientContentPanel.add(firstNameField);
-        insertPatientContentPanel.add(lastNameLabel);
-        insertPatientContentPanel.add(lastNameField);
-        insertPatientContentPanel.add(middleNameLabel);
-        insertPatientContentPanel.add(middleNameField);
-        insertPatientContentPanel.add(suffixLabel);
-        insertPatientContentPanel.add(suffixField);
-        insertPatientContentPanel.add(dateOfBirthLabel);
-        insertPatientContentPanel.add(dateOfBirthField);
-        insertPatientContentPanel.add(address1Label);
-        insertPatientContentPanel.add(address1Field);
-        insertPatientContentPanel.add(address2Label);
-        insertPatientContentPanel.add(address2Field);
-        insertPatientContentPanel.add(cityLabel);
-        insertPatientContentPanel.add(cityField);
-        insertPatientContentPanel.add(stateLabel);
-        insertPatientContentPanel.add(stateField);
-        insertPatientContentPanel.add(zipCodeLabel);
-        insertPatientContentPanel.add(zipCodeField);
-        insertPatientContentPanel.add(countyLabel);
-        insertPatientContentPanel.add(countyField);
-        insertPatientContentPanel.add(workPhoneLabel);
-        insertPatientContentPanel.add(workPhoneField);
-        insertPatientContentPanel.add(homePhoneLabel);
-        insertPatientContentPanel.add(homePhoneField);
-        insertPatientContentPanel.add(cellPhoneLabel);
-        insertPatientContentPanel.add(cellPhoneField);
-        insertPatientContentPanel.add(raceLabel);
-        insertPatientContentPanel.add(raceField);
-        insertPatientContentPanel.add(ethnicityLabel);
-        insertPatientContentPanel.add(ethnicityField);
-        insertPatientContentPanel.add(sexLabel);
-        insertPatientContentPanel.add(sexField);
-        insertPatientPanel.add(insertPatientContentPanel);
-
-
-        // ***** Assemble cardPanel *****
-
-        cardPanel.add(homePanel, "Home");
-        cardPanel.add(profilePanel, "Profile");
-        cardPanel.add(dashboardPanel, "Dashboard");
-        cardPanel.add(insertPatientPanel, "Insert");
-
-        this.setBackground(Color.white);
-        this.add(cardPanel);
     }
 
-    public void displayHomeCard() {
-        cardLayout.show(cardPanel, "Home");
-        System.out.println("Home card now showing.");
-    }
-
-    public void displayPatientCard() {
-        cardLayout.show(cardPanel, "Profile");
-        System.out.println("Patient card now showing.");
-    }
-
-    public void displayDashboardCard() {
-        cardLayout.show(cardPanel, "Dashboard");
-        System.out.println("Dashboard card now showing.");
-    }
-
-    public void displayInsertCard() {
-        cardLayout.show(cardPanel, "Insert");
-        System.out.println("Insert card now showing.");
-    }
-
-    public void chooseFileListener()
-    {
-        try{
-            homeModel.chooseCSVFile();
-            homeModel.readCSVData();
-            viewPatientButton.setEnabled(true);
-            viewDashboardButton.setEnabled(true);
-            insertPatientButton.setEnabled(true);
-            welcomeLabel.setText("File Chosen: "+homeModel.getFilePath());
-            welcomeLabel.setForeground(new Color(0, 42, 92));
-        }catch (Exception e){
-            welcomeLabel.setText("Please enter a valid .csv file:");
-            welcomeLabel.setForeground(Color.red);
-            viewPatientButton.setEnabled(false);
-            viewDashboardButton.setEnabled(false);
-            insertPatientButton.setEnabled(false);
-        }finally {
-            if (Objects.equals(homeModel.getFilePath(), "")){
-                welcomeLabel.setText("Please enter a valid .csv file:");
-                welcomeLabel.setForeground(Color.red);
-                viewPatientButton.setEnabled(false);
-                viewDashboardButton.setEnabled(false);
-                insertPatientButton.setEnabled(false);
-            }
-        }
-    }
-
-    public void makeDashboard(){
+    public void buildDashboard(){
+        dashboardContentPanel.removeAll();
+        revalidate();
+        repaint();
         // Get the list of patients
         ArrayList <Patient> patientList = (ArrayList <Patient> ) homeModel.getPatientData();
 
@@ -448,8 +394,183 @@ public class HomePanel extends JPanel {
         // Add the gender chart panel to the dashboard content panel
         dashboardContentPanel.setBorder(new EmptyBorder(15, 500, 15, 500));
         dashboardContentPanel.add(genderChartPanel);
-        cardLayout.show(cardPanel, "Dashboard");
 
+        dashboardPanel.setBackground(Color.white);
+        dashboardPanel.add(dashboardContentPanel);
+    }
+
+    public void buildInsertPatient() {
+        //insertPatientPanel.setLayout(new BorderLayout());
+        JPanel insertPatientContentPanel = new JPanel(new GridLayout(21, 2, 5, 5));
+        //insertPatientContentPanel.removeAll();
+        //revalidate();
+        //repaint();
+
+        JLabel insertPatientLabel = new JLabel("Insert the new patient information.");
+        //insertPatientContentPanel.setBackground(new Color(0, 42, 92));
+        insertPatientContentPanel.add(insertPatientLabel, BorderLayout.NORTH);
+        insertPatientContentPanel.add(new JLabel(""));
+
+        JLabel patientIDLabel = new JLabel("Patient ID: ");
+        JTextField patientIDField = new JTextField("");
+        insertPatientContentPanel.add(patientIDLabel);
+        insertPatientContentPanel.add(patientIDField);
+
+        JLabel firstNameLabel = new JLabel("First Name: ");
+        JTextField firstNameField = new JTextField("");
+        insertPatientContentPanel.add(firstNameLabel);
+        insertPatientContentPanel.add(firstNameField);
+
+        JLabel lastNameLabel = new JLabel("Last Name: ");
+        JTextField lastNameField = new JTextField("");
+        insertPatientContentPanel.add(lastNameLabel);
+        insertPatientContentPanel.add(lastNameField);
+
+        JLabel middleNameLabel = new JLabel("Middle Name: ");
+        JTextField middleNameField = new JTextField("");
+        insertPatientContentPanel.add(middleNameLabel);
+        insertPatientContentPanel.add(middleNameField);
+
+        JLabel suffixLabel = new JLabel("Suffix: ");
+        JTextField suffixField = new JTextField("");
+        insertPatientContentPanel.add(suffixLabel);
+        insertPatientContentPanel.add(suffixField);
+
+        JLabel dateOfBirthLabel = new JLabel("Date of Birth: ");
+        JTextField dateOfBirthField = new JTextField("");
+        insertPatientContentPanel.add(dateOfBirthLabel);
+        insertPatientContentPanel.add(dateOfBirthField);
+
+        JLabel address1Label = new JLabel("Address Line 1: ");
+        JTextField address1Field = new JTextField("");
+        insertPatientContentPanel.add(address1Label);
+        insertPatientContentPanel.add(address1Field);
+
+        JLabel address2Label = new JLabel("Address Line 2: ");
+        JTextField address2Field = new JTextField("");
+        insertPatientContentPanel.add(address2Label);
+        insertPatientContentPanel.add(address2Field);
+
+        JLabel cityLabel = new JLabel("City: ");
+        JTextField cityField = new JTextField("");
+        insertPatientContentPanel.add(cityLabel);
+        insertPatientContentPanel.add(cityField);
+
+        JLabel stateLabel = new JLabel("State: ");
+        JTextField stateField = new JTextField("");
+        insertPatientContentPanel.add(stateLabel);
+        insertPatientContentPanel.add(stateField);
+
+        JLabel zipCodeLabel = new JLabel("Zip Code: ");
+        JTextField zipCodeField = new JTextField("");
+        insertPatientContentPanel.add(zipCodeLabel);
+        insertPatientContentPanel.add(zipCodeField);
+
+        JLabel countyLabel = new JLabel("County: ");
+        JTextField countyField = new JTextField("");
+        insertPatientContentPanel.add(countyLabel);
+        insertPatientContentPanel.add(countyField);
+
+        JLabel workPhoneLabel = new JLabel("Work Phone: ");
+        JTextField workPhoneField = new JTextField("");
+        insertPatientContentPanel.add(workPhoneLabel);
+        insertPatientContentPanel.add(workPhoneField);
+
+        JLabel homePhoneLabel = new JLabel("Home Phone: ");
+        JTextField homePhoneField = new JTextField("");
+        insertPatientContentPanel.add(homePhoneLabel);
+        insertPatientContentPanel.add(homePhoneField);
+
+        JLabel cellPhoneLabel = new JLabel("Cell Phone: ");
+        JTextField cellPhoneField = new JTextField("");
+        insertPatientContentPanel.add(cellPhoneLabel);
+        insertPatientContentPanel.add(cellPhoneField);
+
+        JLabel raceLabel = new JLabel("Race: ");
+        JTextField raceField = new JTextField("");
+        insertPatientContentPanel.add(raceLabel);
+        insertPatientContentPanel.add(raceField);
+
+        JLabel ethnicityLabel = new JLabel("Ethnicity: ");
+        JTextField ethnicityField = new JTextField("");
+        insertPatientContentPanel.add(ethnicityLabel);
+        insertPatientContentPanel.add(ethnicityField);
+
+        JLabel sexLabel = new JLabel("Sex: ");
+        JTextField sexField = new JTextField("");
+        insertPatientContentPanel.add(sexLabel);
+        insertPatientContentPanel.add(sexField);
+
+        JButton submitButton = new JButton("Submit");
+        insertPatientContentPanel.add(submitButton);
+
+        // Add action listener to the submit button
+        submitButton.addActionListener(e -> {
+            // Get the values entered by the user
+            String patientID = patientIDField.getText();
+            String firstName = firstNameField.getText();
+            String lastName = lastNameField.getText();
+            String middleName = middleNameField.getText();
+            String suffix = suffixField.getText();
+            String dateOfBirth = dateOfBirthField.getText();
+            String address1 = address1Field.getText();
+            String address2 = address2Field.getText();
+            String city = cityField.getText();
+            String state = stateField.getText();
+            String zipCode = zipCodeField.getText();
+            String county = countyField.getText();
+            String workPhone = workPhoneField.getText();
+            String homePhone = homePhoneField.getText();
+            String cellPhone = cellPhoneField.getText();
+            String race = raceField.getText();
+            String ethnicity = ethnicityField.getText();
+            String sex = sexField.getText();
+
+            // Show a message dialog to confirm the new patient was added successfully
+            JOptionPane.showMessageDialog(null, "Patient added successfully.");
+
+            // Create a FileWriter object to append to the CSV file
+            FileWriter writer;
+            try {
+                writer = new FileWriter(homeModel.getFilePath(), true);
+                // Write the new patient information to the CSV file
+                writer.write("\r\n"+ patientID + "," + firstName + "," + lastName + "," + middleName + "," + suffix + ","
+                        + dateOfBirth + "," + address1 + "," + address2 + "," + city + "," + state + "," + zipCode + ","
+                        + county + "," + workPhone + "," + homePhone + "," + cellPhone + "," + race + "," + ethnicity + ","
+                        + sex);
+
+                // Close the FileWriter object to flush and release resources
+                writer.close();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            // Update local CSV data
+            homeModel.readCSVData();
+            buildDashboard();
+
+            // Clear the fields for the next entry
+            patientIDField.setText("");
+            firstNameField.setText("");
+            lastNameField.setText("");
+            middleNameField.setText("");
+            suffixField.setText("");
+            dateOfBirthField.setText("");
+            address1Field.setText("");
+            address2Field.setText("");
+            cityField.setText("");
+            stateField.setText("");
+            zipCodeField.setText("");
+            countyField.setText("");
+            workPhoneField.setText("");
+            homePhoneField.setText("");
+            cellPhoneField.setText("");
+            raceField.setText("");
+            ethnicityField.setText("");
+            sexField.setText("");
+        });
+
+        insertPatientPanel.add(insertPatientContentPanel, BorderLayout.CENTER);
     }
 
     public Vector<String> makeRow(Patient patient){
@@ -467,7 +588,7 @@ public class HomePanel extends JPanel {
         String lastNameSearchTerm = lastNameSearchField.getText().toLowerCase();
         String firstNameSearchTerm = firstNameSearchField.getText().toLowerCase();
         String DOBSearchTerm = DOBSearchField.getText();
-        tableModel.setRowCount(0);
+        searchTableModel.setRowCount(0);
 
         // Set up boolean flags
         boolean hasIDSearchTerm = false;
@@ -496,19 +617,19 @@ public class HomePanel extends JPanel {
             }
 
             if (matchCount == 1 && hasIDSearchTerm) {
-                tableModel.addRow(makeRow(patient));
+                searchTableModel.addRow(makeRow(patient));
             } else if (matchCount == 1 && hasLastNameSearchTerm){
-                tableModel.addRow(makeRow(patient));
+                searchTableModel.addRow(makeRow(patient));
             }else if (matchCount == 1 && hasFirstNameSearchTerm){
-                tableModel.addRow(makeRow(patient));
+                searchTableModel.addRow(makeRow(patient));
             }else if (matchCount == 1 && hasDOBSearchTerm){
-                tableModel.addRow(makeRow(patient));
+                searchTableModel.addRow(makeRow(patient));
             } else if (matchCount == 2 && hasLastNameSearchTerm && hasFirstNameSearchTerm) {
-                tableModel.addRow(makeRow(patient));
+                searchTableModel.addRow(makeRow(patient));
             }else if (matchCount == 3 && hasLastNameSearchTerm && hasFirstNameSearchTerm && hasDOBSearchTerm) {
-                tableModel.addRow(makeRow(patient));
+                searchTableModel.addRow(makeRow(patient));
             }else if (matchCount == 4 && hasIDSearchTerm && hasLastNameSearchTerm && hasFirstNameSearchTerm && hasDOBSearchTerm) {
-                tableModel.addRow(makeRow(patient));
+                searchTableModel.addRow(makeRow(patient));
             }
 
             hasIDSearchTerm = false;
@@ -524,8 +645,8 @@ public class HomePanel extends JPanel {
 
         Patient selectedPatient = new Patient();
         int column = 0;
-        int row = table.getSelectedRow();
-        String value = table.getModel().getValueAt(row, column).toString();
+        int row = searchTable.getSelectedRow();
+        String value = searchTable.getModel().getValueAt(row, column).toString();
         for (Patient patient : patientList){
             if (Objects.equals(patient.getPatientID(), value)){
                 selectedPatient = patient;
@@ -619,8 +740,9 @@ public class HomePanel extends JPanel {
         patientFrame.setTitle("Patient #"+selectedPatient.getPatientID()+" Profile");
 
         // Add the logo image to the top left corner of the frame
+        JLabel logoLabel2 = new JLabel(new ImageIcon(logoImage));
         patientFrame.getContentPane().setBackground(Color.white);
-        patientFrame.getContentPane().add(logoLabel, BorderLayout.WEST);
+        patientFrame.getContentPane().add(logoLabel2, BorderLayout.WEST);
 
         patientFrame.pack();
         patientFrame.setVisible(true);

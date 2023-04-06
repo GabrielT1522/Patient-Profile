@@ -210,11 +210,8 @@ public class Patient {
         Calendar nowCal = Calendar.getInstance();
         try {
             dobCal.setTime(sdf.parse(dob));
-        } catch (ParseException e) {
-            ;
-        }finally {
-            ;
-        }
+        } catch (ParseException ignored) {}
+
         int dobYear = dobCal.get(Calendar.YEAR);
         int dobMonth = dobCal.get(Calendar.MONTH);
         int dobDay = dobCal.get(Calendar.DAY_OF_MONTH);
