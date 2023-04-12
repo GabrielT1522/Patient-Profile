@@ -36,8 +36,8 @@ public class HomeModel {
 
     public void chooseCSVFile() {
         // for testing
-        JFileChooser jfc = new JFileChooser("/Users/gabrieltorres/Desktop/Laredo Health");
-        //JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        //JFileChooser jfc = new JFileChooser("/Users/gabrieltorres/Desktop/Laredo Health");
+        JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
         jfc.setDialogTitle("Select a CSV file");
         jfc.setAcceptAllFileFilterUsed(false);
         FileNameExtensionFilter filter = new FileNameExtensionFilter(".csv Files", "csv");
