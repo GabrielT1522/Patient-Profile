@@ -16,15 +16,33 @@ public class MenuListener implements ActionListener {
         String actionCommand = evt.getActionCommand();
 
         switch (actionCommand) {
-            case "Home" -> homePanel.displayHomeCard();
-            case "View Patient" -> homePanel.displayPatientCard();
-            case "Dashboard" -> homePanel.displayDashboardCard();
-            case "Insert Patient" -> homePanel.displayInsertCard();
-            case "About" -> homeFrame.openAbout();
-            case "Help" -> homeFrame.openHelp();
-            case "Load" -> homePanel.chooseFileListener();
-            case "Exit" -> System.exit(0);
-            default -> System.out.println("ERROR: unknown action command.");
+            case "Home":
+                homePanel.displayHomeCard();
+                break;
+            case "View Patient":
+                homePanel.displayPatientCard();
+                break;
+            case "Dashboard":
+                homePanel.displayDashboardCard();
+                break;
+            case "Insert Patient":
+                homePanel.displayInsertCard();
+                break;
+            case "About":
+                homeFrame.openAbout();
+                break;
+            case "Help":
+                homeFrame.openHelp();
+                break;
+            case "Load":
+                homePanel.chooseFileListener();
+                break;
+            case "Exit":
+                System.exit(0);
+                break;
+            default:
+                System.out.println("ERROR: unknown action command.");
+                break;
         }
     }
 }
