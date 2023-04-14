@@ -4,7 +4,7 @@ This is a desktop application developed in Java for patient management in the Ci
 # Getting Started
 To run the application, follow these steps:
 
-1. Download and unzip this repository on your machine.
+1. Download and unzip/extract this repository on your machine.
 
 2. Open a terminal (Command Prompt on Windows, or Terminal on macOS/Linux).
 
@@ -26,10 +26,27 @@ To run the application, follow these steps:
    
  
    This will execute the Java command to run the JAR file.
+   
 
-5. The Java GUI application should now start and you can interact with it.
+The Java GUI application should now start and you can interact with it.
 
-#### Note: If you encounter any issues or errors, please make sure you have Java installed on your system and that the Java command is in your system's PATH.
+#### Note: If you encounter any issues or errors, please make sure you have Java installed on your system and that the Java command is in your system's path. Moving any files out of their original folder may cause the program to stop working. To add the file on the desktop, or anywhere on your computer for easier access, you need to make a shortcut of the program. 
+
+# Making a Shortcut
+Follow these steps to properly make an executable shortcut:
+
+1. Locate the Patient Profile.jar and RunOnWindows.bat files in the Patient-Profile-master folder.
+2. Make sure that the program works on the original "Patient Profile.jar" and "RunOnWindows.bat" files.
+3. Right click on "Patient Profile.jar"
+4. Select Create Shortcut
+5. Find the new shortcut instance. It should be named "Patient Profile - Shortcut" or similar. This file may be placed anywhere on the computer for easier access.
+
+You may change the icon of the shortcut for better recognition:
+
+1. Right click on the newly made shortcut.
+2. Click Change Icon
+3. Browse to the Patient-Profile-master folder and select the "logoImg.ico" or choose one of the many icons included with Windows.
+4. Select Apply
    
 # Features
 The application has three main tabs:
@@ -94,7 +111,7 @@ The application has three main tabs:
 1. Click on the "Insert Patient" tab.
 2. Fill out the patient details in the form provided.
 3. Click the "Submit" button.
-4. The new patient's information will be appended to the original .csv file. 
+4. The new patient's information will be appended to the original .csv file.
 
 # Conclusion
 This application provides a user-friendly interface for managing patient data in the City of Laredo Health Department. Its three tabs - view patient, dashboard, and insert patient - allow users to easily search for patient information, view statistics about the dataset, and add new patient information. If you have any questions or issues with the application, please feel free to contact the developer.
